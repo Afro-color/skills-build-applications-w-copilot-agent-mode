@@ -1,1 +1,2 @@
-web: gunicorn mr_hall_workout.wsgi
+web: gunicorn mr_hall_workout.wsgi --log-file -
+release: python manage.py migrate --no-input

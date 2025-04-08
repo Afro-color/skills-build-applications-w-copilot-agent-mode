@@ -4,3 +4,4 @@ psycopg2-binary
 pymongo
 transformers
 torch
+dj-database-url>=2,<3
