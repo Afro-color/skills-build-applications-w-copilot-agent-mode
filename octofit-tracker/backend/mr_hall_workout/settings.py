@@ -14,6 +14,8 @@ from pathlib import Path
 import dj_database_url
 import os
 import django_heroku
+from decouple import config
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -23,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%i!qh1^$g=p15gi)_=$&%p9lcjl^dodh*h3@##p^cz80c7$e*9"
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-placeholder')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['overachievers.herokuapp.com', '127.0.0.1', 'localhost', '[::1]']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
 
 
 # Application definition
@@ -64,6 +66,13 @@ MIDDLEWARE += [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
+# Middleware for performance optimization
+MIDDLEWARE += [
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
+]
+
 ROOT_URLCONF = "mr_hall_workout.urls"
 
 TEMPLATES = [
@@ -88,7 +97,20 @@ WSGI_APPLICATION = "mr_hall_workout.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='sqlite:///db.sqlite3'),
+        conn_max_age=600,
+        ssl_require=config('DB_SSL_REQUIRE', default=True, cast=bool)
+    )
+}
+
+
+# Caching configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
 }
 
 
@@ -162,6 +184,67 @@ AUTHENTICATION_BACKENDS = [
 # Redirect URLs for login/logout
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/error.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
+
+# JWT Authentication
+JWT_AUTH = {
+    'JWT_SECRET_KEY': config('JWT_SECRET_KEY'),
+    'JWT_EXPIRATION_DELTA': timedelta(days=7),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+}
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+
+# Input Validation and Data Sanitization
+DATA_VALIDATION = {
+    'ENABLE_SANITIZATION': True,  # Enable input sanitization
+}
 
 # Activate Django-Heroku
 django_heroku.settings(locals())
