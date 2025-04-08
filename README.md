@@ -1,6 +1,6 @@
-# The Perfect Workout
+# Over Achievers
 
-The Perfect Workout is a comprehensive fitness tracking application designed to help users achieve their fitness goals through structured workout plans, progress tracking, and gamification. This program is tailored for individuals of all fitness levels, from beginners to advanced athletes.
+Over Achievers is a futuristic and sustainable fitness tracking app designed to motivate users through seasonal badges, achievements, and interactive features. The app promotes healthy competition and personal growth.
 
 ## Features
 

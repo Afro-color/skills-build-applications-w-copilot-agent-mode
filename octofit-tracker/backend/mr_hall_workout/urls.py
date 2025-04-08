@@ -17,8 +17,22 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from fitness_app.views import WeightLogViewSet, AchievementViewSet, NutritionCheckView, WeatherInfoView, UserProfileViewSet, BadgeTierViewSet, PurchasableBadgeViewSet, AwardBadgeView, PurchaseBadgeView
+
+router = DefaultRouter()
+router.register(r'weight-logs', WeightLogViewSet, basename='weightlog')
+router.register(r'achievements', AchievementViewSet, basename='achievement')
+router.register(r'profiles', UserProfileViewSet, basename='userprofile')
+router.register(r'badge-tiers', BadgeTierViewSet, basename='badgetier')
+router.register(r'purchasable-badges', PurchasableBadgeViewSet, basename='purchasablebadge')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),  # Include allauth URLs for OAuth
+    path('api/', include(router.urls)),
+    path('api/nutrition-check/', NutritionCheckView.as_view(), name='nutrition-check'),
+    path('api/weather-info/', WeatherInfoView.as_view(), name='weather-info'),
+    path('api/award-badge/', AwardBadgeView.as_view(), name='award-badge'),
+    path('api/purchase-badge/', PurchaseBadgeView.as_view(), name='purchase-badge'),
 ]

@@ -2,3 +2,5 @@ Django>=3.2,<4.0
 gunicorn
 psycopg2-binary
 pymongo
+transformers
+torch

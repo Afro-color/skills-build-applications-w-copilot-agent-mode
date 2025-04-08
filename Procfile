@@ -1,0 +1,1 @@
+web: gunicorn mr_hall_workout.wsgi:application --log-file -
