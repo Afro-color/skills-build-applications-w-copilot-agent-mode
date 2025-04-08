@@ -17,7 +17,7 @@ import django_heroku
 from decouple import config
 from datetime import timedelta
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Update BASE_DIR to point to the new root directory
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
@@ -245,6 +245,14 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
 DATA_VALIDATION = {
     'ENABLE_SANITIZATION': True,  # Enable input sanitization
 }
+
+# Security settings
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Activate Django-Heroku
 django_heroku.settings(locals())
