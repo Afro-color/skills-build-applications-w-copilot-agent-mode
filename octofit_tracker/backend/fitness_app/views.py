@@ -3,8 +3,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import requests
-from .models import WeightLog, Achievement, UserProfile, BadgeTier, PurchasableBadge, DailyBadgeLimit, WeeklyBadgePurchase
+from .models import WeightLog, Achievement, UserProfile, BadgeTier, PurchasableBadge, DailyBadgeLimit, WeeklyBadgePurchase, Task
 from .serializers import WeightLogSerializer, AchievementSerializer, UserProfileSerializer, BadgeTierSerializer, PurchasableBadgeSerializer
+from django.http import JsonResponse
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import api_view
+from django.db.models import Count
 
 class WeightLogViewSet(viewsets.ModelViewSet):
     queryset = WeightLog.objects.all()
@@ -123,3 +127,26 @@ class PurchaseBadgeView(APIView):
         # Record the badge purchase
         WeeklyBadgePurchase.objects.create(user=request.user, badge=badge)
         return Response({"message": f"Badge '{badge.name}' purchased successfully! Enjoy your shiny new badge!"})
+
+class TaskPagination(PageNumberPagination):
+    page_size = 10
+
+@api_view(['GET'])
+def task_list(request):
+    tasks = Task.objects.all()
+    paginator = TaskPagination()
+    paginated_tasks = paginator.paginate_queryset(tasks, request)
+    return paginator.get_paginated_response([{"id": task.id, "name": task.name, "completed": task.completed} for task in paginated_tasks])
+
+def task_detail(request, id):
+    # Example response for a single task
+    task = {"id": id, "name": f"Task {id}", "completed": False}
+    return JsonResponse({"task": task})
+
+@api_view(['GET'])
+def task_analytics(request):
+    analytics = Task.objects.aggregate(
+        completed=Count('id', filter=models.Q(completed=True)),
+        pending=Count('id', filter=models.Q(completed=False)),
+    )
+    return Response(analytics)

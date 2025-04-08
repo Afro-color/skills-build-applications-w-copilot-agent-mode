@@ -6,7 +6,9 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mr_hall_workout.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "overachievers.settings")
+    # Add the backend directory to PYTHONPATH
+    sys.path.append(os.path.join(os.path.dirname(__file__), "octofit-tracker", "backend"))
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

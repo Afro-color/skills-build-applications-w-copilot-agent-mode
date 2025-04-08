@@ -40,9 +40,13 @@ __pycache__/
 !requirements.txt
 !Procfile
 !runtime.txt
+!LICENSE
 
 # Ignore logs directory
 logs/
 
 # Ignore zip files
 *.zip
+
+# Ignore Celery worker files
+celerybeat-schedule

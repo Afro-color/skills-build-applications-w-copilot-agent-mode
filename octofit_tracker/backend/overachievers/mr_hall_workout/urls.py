@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from fitness_app.views import WeightLogViewSet, AchievementViewSet, NutritionCheckView, WeatherInfoView, UserProfileViewSet, BadgeTierViewSet, PurchasableBadgeViewSet, AwardBadgeView, PurchaseBadgeView
+from django.contrib.auth import views as auth_views
 
 router = DefaultRouter()
 router.register(r'weight-logs', WeightLogViewSet, basename='weightlog')
@@ -28,8 +29,10 @@ router.register(r'badge-tiers', BadgeTierViewSet, basename='badgetier')
 router.register(r'purchasable-badges', PurchasableBadgeViewSet, basename='purchasablebadge')
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls, name='overachiever_admin'),
     path("accounts/", include("allauth.urls")),  # Include allauth URLs for OAuth
+    path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
+    path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('api/', include(router.urls)),
     path('api/nutrition-check/', NutritionCheckView.as_view(), name='nutrition-check'),
     path('api/weather-info/', WeatherInfoView.as_view(), name='weather-info'),

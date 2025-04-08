@@ -111,3 +111,10 @@ class WeeklyBadgePurchase(models.Model):
         end_of_week = start_of_week + timedelta(days=6)
         weekly_count = WeeklyBadgePurchase.objects.filter(user=user, purchase_date__range=(start_of_week, end_of_week)).count()
         return weekly_count < 5
+
+class Task(models.Model):
+    name = models.CharField(max_length=255)
+    completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name

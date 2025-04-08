@@ -2,22 +2,18 @@
 Django>=5.2,<5.3
 dj-database-url>=0.5.0,<1.0
 whitenoise>=6.0.0,<7.0
-django-heroku>=0.3.1
+django-allauth>=0.50.0,<1.0
 
 # WSGI server
 gunicorn>=20.1.0,<21.0
 
 # Database adapters
 psycopg2-binary>=2.9.0,<3.0
-pymongo>=4.0,<5.0
-
-# Machine learning and data processing
-transformers>=4.0,<5.0
-torch>=2.0,<3.0
 
 # Security and image processing
 bcrypt>=4.0.0,<5.0
 pillow>=9.0.0,<10.0
+cryptography>=41.0.0,<42.0.0
 
 # Task queue and background processing
 celery>=5.2.0,<6.0.0
@@ -25,3 +21,9 @@ redis>=4.0.0,<5.0.0
 
 # Environment variable management
 python-decouple>=3.6,<4.0
+
+# API and logging
+drf-yasg>=1.21.5,<2.0
+djangorestframework>=3.14.0,<4.0
+json-log-formatter
+python-dotenv
