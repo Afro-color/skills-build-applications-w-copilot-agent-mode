@@ -1,1 +1,1 @@
-web: gunicorn mr_hall_workout.wsgi:application --log-file -
+web: gunicorn octofit_tracker.backend.mr_hall_workout.wsgi:application --log-file -
