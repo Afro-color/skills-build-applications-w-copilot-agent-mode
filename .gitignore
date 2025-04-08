@@ -36,3 +36,4 @@ __pycache__/
 # Ensure these files are not ignored
 !requirements.txt
 !Procfile
+!runtime.txt
