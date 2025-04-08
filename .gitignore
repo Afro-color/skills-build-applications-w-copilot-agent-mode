@@ -32,3 +32,7 @@ yarn-error.log*
 # Python files
 *.pyc
 __pycache__/
+
+# Ensure these files are not ignored
+!requirements.txt
+!Procfile
