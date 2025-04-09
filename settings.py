@@ -1,6 +1,20 @@
 import os
-import django_heroku
+from decouple import config
+
+# Add this at the top of the file to define BASE_DIR
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Ensure django_heroku is installed
+try:
+    import django_heroku
+except ImportError:
+    raise ImportError("django_heroku module is not installed. Please install it using 'pip install django-heroku'.")
+
 import dj_database_url
+
+# Ensure all critical environment variables are loaded
+from dotenv import load_dotenv
+load_dotenv()
 
 # Utility function to fetch environment variables with fallback values
 def get_env_variable(var_name, default_value):
@@ -16,9 +30,15 @@ DATABASES = {
     )
 }
 
+# Ensure a default value for CERT_FILE
+CERT_FILE = os.getenv('CERT_FILE', 'default_cert_file_path')
+
 # Add fallback values for required environment variables
 CERT_FILE = get_env_variable("CERT_FILE", "path/to/default/certificate.crt")
 KEY_FILE = get_env_variable("KEY_FILE", "path/to/default/private.key")
+
+# Debugging log to verify CERT_FILE
+print(f"CERT_FILE: {CERT_FILE}")
 
 # Ensure other critical environment variables have defaults
 SECRET_KEY = get_env_variable("SECRET_KEY", "default-secret-key")
@@ -59,6 +79,13 @@ LOGGING = {
         'level': 'WARNING',
     },
 }
+
+# Debugging log to verify environment variables
+print(f"CERT_FILE: {CERT_FILE}")
+print(f"SECRET_KEY: {SECRET_KEY}")
+print(f"DEBUG: {DEBUG}")
+print(f"DATABASE_URL: {DATABASE_URL}")
+print(f"REDIS_URL: {REDIS_URL}")
 
 # Use django-heroku for Heroku-specific settings
 django_heroku.settings(locals())
