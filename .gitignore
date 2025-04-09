@@ -47,6 +47,11 @@ logs/
 
 # Ignore zip files
 *.zip
+octofit-tracker-repo.zip
+workoutapp.zip
 
 # Ignore Celery worker files
 celerybeat-schedule
+
+# Ignore SQLite database
+*.sqlite3

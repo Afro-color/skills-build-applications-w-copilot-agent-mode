@@ -16,6 +16,7 @@ from redis import Redis
 from celery import Celery
 import smtplib
 from email.mime.text import MIMEText
+from settings import CERT_FILE, KEY_FILE
 
 # Load environment variables from .env file
 load_dotenv()
@@ -179,11 +180,14 @@ def configure_https(cert_file, key_file, retries=3, delay=2):
                 raise
 
 def validate_environment_variables(required_vars):
-    """Validate that all required environment variables are set."""
-    missing_vars = [var for var in required_vars if not os.getenv(var)]
+    """Validate that all required environment variables are set or have fallback values."""
+    missing_vars = [
+        var for var in required_vars
+        if not os.getenv(var) and not globals().get(var)
+    ]
     if missing_vars:
         raise EnvironmentError(f"Missing required environment variables: {', '.join(missing_vars)}")
-    logger.info("All required environment variables are set.")
+    logger.info("All required environment variables are set or have fallback values.")
 
 def graceful_shutdown(signum=None, frame=None):
     """Perform cleanup tasks during application shutdown."""
@@ -250,7 +254,8 @@ def validate_config(config, required_keys):
 def load_config_from_file(config_path):
     """Load and validate configuration from a JSON file."""
     if not os.path.exists(config_path):
-        raise FileNotFoundError(f"Configuration file '{config_path}' not found.")
+        logger.warning(f"Configuration file '{config_path}' not found. Using defaults.")
+        return {}
     with open(config_path, 'r') as config_file:
         config = json.load(config_file)
 
@@ -443,12 +448,10 @@ try:
     try:
         config = load_config_from_file(CONFIG_PATH)
         validate_config(config, ["CERT_FILE", "KEY_FILE"])
-        CERT_FILE = config.get("CERT_FILE", "/path/to/certificate.crt")
-        KEY_FILE = config.get("KEY_FILE", "/path/to/private.key")
+        CERT_FILE = config.get("CERT_FILE", CERT_FILE)
+        KEY_FILE = config.get("KEY_FILE", KEY_FILE)
     except Exception as e:
         logger.warning(f"Failed to load configuration file: {e}. Falling back to environment variables.")
-        CERT_FILE = os.getenv("CERT_FILE", "/path/to/certificate.crt")
-        KEY_FILE = os.getenv("KEY_FILE", "/path/to/private.key")
 
     # Validate required environment variables
     REQUIRED_ENV_VARS = [
